@@ -22,29 +22,32 @@ struct MealResponse: Codable {
     let meals: [Dessert]
 }
 
-struct ContentView: View {
+struct ContentView: View{
     @State private var desserts: [Dessert] = []
-    @State private var isLoading: Bool = false
-    @State private var errorMessage: String?
-
-    var body: some View {
+      @State private var isLoading: Bool = false
+      @State private var errorMessage: String?
+    
+var body: some View {
         NavigationView {
             List(desserts, id: \.idMeal) { dessert in
-                HStack {                    AsyncImage(url: URL(string: dessert.strMealThumb)) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 120, height: 70)
-                    } placeholder: {
-                        ProgressView()
-                            .frame(width: 120, height: 70)
-                            .background(Color.gray)
+                NavigationLink(destination: DetailView(dessert: dessert)) { // Wrap HStack in NavigationLink
+                    HStack {
+                        AsyncImage(url: URL(string: dessert.strMealThumb)) { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 120, height: 70)
+                        } placeholder: {
+                            ProgressView()
+                                .frame(width: 120, height: 70)
+                                .background(Color.gray)
+                        }
+
+                        Text(dessert.strMeal)
+                            .bold()
                     }
-                    
-                    Text(dessert.strMeal)
-                        .bold()
+                    .padding(3)
                 }
-                .padding(3)
             }
             .navigationTitle("Desserts")
             .onAppear {
