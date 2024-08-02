@@ -69,6 +69,10 @@ struct MealDetail: Codable {
     }
 }
 
+struct MealDetailResponse: Codable {
+    let meals: [MealDetail]
+}
+
 struct MealResponse: Codable {
     let meals: [Dessert]
 }

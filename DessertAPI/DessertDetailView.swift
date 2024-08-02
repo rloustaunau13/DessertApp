@@ -26,9 +26,17 @@ struct DetailView: View {
                     .fontWeight(.bold)
                     .padding()
 
-                Text(dessertDetail.strInstructions)
-                    .padding()
+                Text("Instructions")
+                .font(.headline)
+                .padding([.top, .horizontal])
 
+                Text(dessertDetail.strInstructions)
+                .padding()
+                .fixedSize(horizontal: false, vertical: true) // Ensure text wraps within the available space
+                
+                Text("Ingredients")
+                .font(.headline)
+                .padding([.top, .horizontal])
                 // List of ingredients
                 List {
                     ForEach(Array(zip(dessertDetail.ingredients, dessertDetail.measures)), id: \.0) { ingredient, measure in
@@ -95,6 +103,4 @@ struct DetailView: View {
 }
 
 
-struct MealDetailResponse: Codable {
-    let meals: [MealDetail]
-}
+
