@@ -1,36 +1,14 @@
-
 import SwiftUI
 
-// Define the Dessert model
-struct Dessert: Hashable, Codable {
-    let strMeal: String
-    let strMealThumb: String
-    let idMeal: String
-}
-
-struct mealDetail:Hashable, Codable {
-    let idMeal:String
-    let strMeal:String
-    let strMealThumb:String
-    let strInstructions:String
-    let ingredients:[String]
-    let measures:[String]
-}
-
-// Define the structure for the API response
-struct MealResponse: Codable {
-    let meals: [Dessert]
-}
-
-struct ContentView: View{
+struct ContentView: View {
     @State private var desserts: [Dessert] = []
-      @State private var isLoading: Bool = false
-      @State private var errorMessage: String?
-    
-var body: some View {
+    @State private var isLoading: Bool = false
+    @State private var errorMessage: String?
+
+    var body: some View {
         NavigationView {
-            List(desserts, id: \.idMeal) { dessert in
-                NavigationLink(destination: DetailView(dessert: dessert)) { // Wrap HStack in NavigationLink
+            List(desserts) { dessert in
+                NavigationLink(destination: DetailView(dessertID: dessert.idMeal)) {
                     HStack {
                         AsyncImage(url: URL(string: dessert.strMealThumb)) { image in
                             image
@@ -74,22 +52,30 @@ var body: some View {
             print("Invalid URL")
             return
         }
-        
+
         isLoading = true
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data = data, error == nil else {
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
                 DispatchQueue.main.async {
                     isLoading = false
-                    errorMessage = error?.localizedDescription
+                    errorMessage = error.localizedDescription
                 }
                 return
             }
-            
+
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    isLoading = false
+                    errorMessage = "Data is missing"
+                }
+                return
+            }
+
             do {
                 let response = try JSONDecoder().decode(MealResponse.self, from: data)
                 DispatchQueue.main.async {
-                    desserts = response.meals.sorted{$0.strMeal<$1.strMeal}
+                    desserts = response.meals
                     isLoading = false
                 }
             } catch {
@@ -100,8 +86,4 @@ var body: some View {
             }
         }.resume()
     }
-}
-
-#Preview {
-    ContentView()
 }
